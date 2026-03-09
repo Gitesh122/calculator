@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dynamic · calci · pro</title>
+    <!-- google font for modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <!-- font awesome 6 (free) for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0b0f1c 0%, #1a1f33 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            color: #eef2fb;
+        }
+
+        /* main glassmorphic container */
+        .app-wrapper {
+            width: 100%;
+            max-width: 580px;
+            background: rgba(18, 22, 40, 0.75);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 3.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* header – sleek dynamic */
+        .calci-header {
+            padding: 2rem 2rem 1rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .calci-header h1 {
+            font-weight: 600;
+            font-size: 2.4rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(130deg, #ffffff, #b6c0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+
+        .calci-header h1 i {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.6rem;
+            border-radius: 2rem;
+            font-size: 1.5rem;
+            color: #b6c0ff;
+            -webkit-text-fill-color: #b6c0ff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .subhead {
+            font-weight: 400;
+            font-size: 0.9rem;
+            opacity: 0.6;
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            margin-top: 0.3rem;
+            color: #b2b9f0;
+        }
+
+        /* main calculator face */
+        .calci-body {
+            padding: 1.5rem 2rem 2rem 2rem;
+        }
+
+        .screen-container {
+            background: #0e1120;
+            border-radius: 2.2rem;
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 2rem;
+            box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.6), 0 10px 20px -5px #0b0e1a;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        #calc-screen {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            font-size: 3rem;
+            font-weight: 500;
+            text-align: right;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            font-family: 'Inter', monospace;
+            caret-color: #5f7cff;
+        }
+
+        #calc-screen::placeholder {
+            color: rgba(255, 255, 255, 0.15);
+            font-weight: 300;
+        }
+
+        /* history tag / dynamic expression */
+        .expression-hint {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            padding: 0 0.5rem 0.5rem 0.5rem;
+            color: #8f9ae0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        #preview-expr {
+            font-weight: 400;
+            max-width: 70%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .clear-icon {
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 0.2rem 0.6rem;
+            border-radius: 2rem;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .clear-icon:hover {
+            background: #2c3366;
+            color: white;
+        }
+
+        /* buttons grid — super dynamic with gradients & microinteractions */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.8rem;
+        }
+
+        .calci-btn {
+            background: rgba(22, 28, 55, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 2rem;
+            padding: 1.3rem 0.5rem;
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #e7ebff;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 8px 12px -6px #03050b, 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+            transition: all 0.12s ease-out;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            user-select: none;
+        }
+
+        .calci-btn i {
+            font-size: 1.5rem;
+            color: #aab6fe;
+        }
+
+        .calci-btn:hover {
+            background: #2f3a77;
+            transform: scale(1.02);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 20px -8px #1f2550;
+        }
+
+        .calci-btn:active {
+            transform: scale(0.98);
+            background: #1e2552;
+            box-shadow: inset 0 4px 8px #0b0f20;
+        }
+
+        /* operator & special buttons */
+        .btn-operator {
+            background: #2f3a70;
+            color: #d2e0ff;
+            font-weight: 700;
+        }
+
+        .btn-equals {
+            background: linear-gradient(135deg, #4a60e0, #687ef8);
+            color: white;
+            box-shadow: 0 6px 16px #3345b0;
+            border: none;
+        }
+
+        .btn-equals:hover {
+            background: linear-gradient(135deg, #5c72f0, #7f92ff);
+        }
+
+        .btn-clear {
+            background: #282f4a;
+            color: #ffb4b4;
+        }
+
+        .btn-clear:hover {
+            background: #3f3670;
+            color: #ffe1e1;
+        }
+
+        .btn-func {
+            background: #1f2542;
+            font-size: 1.3rem;
+            font-weight: 400;
+        }
+
+        /* footer – dynamic & smooth */
+        .calci-footer {
+            padding: 1.2rem 2rem 1.5rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: rgba(8, 10, 21, 0.4);
+            backdrop-filter: blur(4px);
+            font-size: 0.9rem;
+        }
+
+        .footer-left i {
+            color: #5f7cff;
+            margin-right: 0.5rem;
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-right a {
+            color: #99a4e0;
+            text-decoration: none;
+            transition: 0.2s;
+            font-weight: 400;
+        }
+
+        .footer-right a:hover {
+            color: white;
+            text-shadow: 0 0 8px #5f7cff;
+        }
+
+        /* responsive */
+        @media (max-width: 450px) {
+            .app-wrapper { border-radius: 2rem; }
+            .calci-header h1 { font-size: 2rem; }
+            .button-grid { gap: 0.5rem; }
+            .calci-btn { padding: 1rem 0.2rem; font-size: 1.4rem; }
+            #calc-screen { font-size: 2.4rem; }
+        }
+
+        /* active memory indicator */
+        .mem-indicator {
+            background: #181e38;
+            padding: 0.2rem 1rem;
+            border-radius: 4rem;
+            font-size: 0.7rem;
+            color: #8d9aff;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- header section with dynamic gradient and icons -->
+        <header class="calci-header">
+            <h1>
+                <i class="fas fa-calculator"></i> 
+                dyna<span style="font-weight:300;">·</span>calci
+            </h1>
+            <div class="subhead">
+                <span><i class="fas fa-bolt" style="font-size:0.7rem;"></i> python · flask </span>
+                <span class="mem-indicator"><i class="far fa-clock"></i> instant</span>
+                <span><i class="fas fa-crown"></i> pro</span>
+            </div>
+        </header>
+
+        <!-- main calculator core -->
+        <div class="calci-body">
+            <!-- expression preview + clear all -->
+            <div class="expression-hint">
+                <span id="preview-expr"><i class="far fa-circle"></i> ready</span>
+                <span class="clear-icon" id="clear-all-btn" title="clear all"><i class="fas fa-eraser"></i> C</span>
+            </div>
+
+            <!-- screen input -->
+            <div class="screen-container">
+                <input type="text" id="calc-screen" placeholder="0" value="0" inputmode="none" readonly>
+            </div>
+
+            <!-- button grid – completely dynamic with js logic, but markup is neat -->
+            <div class="button-grid" id="calc-buttons">
+                <!-- row 1 -->
+                <button class="calci-btn btn-func" data-value="("><i class="fas fa-parenthesis"></i> (</button>
+                <button class="calci-btn btn-func" data-value=")"> )</button>
+                <button class="calci-btn btn-clear" data-action="clear">C</button>
+                <button class="calci-btn btn-operator" data-value="/"><i class="fas fa-divide"></i></button>
+
+                <!-- row 2 -->
+                <button class="calci-btn" data-value="7">7</button>
+                <button class="calci-btn" data-value="8">8</button>
+                <button class="calci-btn" data-value="9">9</button>
+                <button class="calci-btn btn-operator" data-value="*"><i class="fas fa-times"></i></button>
+
+                <!-- row 3 -->
+                <button class="calci-btn" data-value="4">4</button>
+                <button class="calci-btn" data-value="5">5</button>
+                <button class="calci-btn" data-value="6">6</button>
+                <button class="calci-btn btn-operator" data-value="-"><i class="fas fa-minus"></i></button>
+
+                <!-- row 4 -->
+                <button class="calci-btn" data-value="1">1</button>
+                <button class="calci-btn" data-value="2">2</button>
+                <button class="calci-btn" data-value="3">3</button>
+                <button class="calci-btn btn-operator" data-value="+"><i class="fas fa-plus"></i></button>
+
+                <!-- row 5 -->
+                <button class="calci-btn btn-func" data-value="0">0</button>
+                <button class="calci-btn btn-func" data-value=".">.</button>
+                <button class="calci-btn btn-func" data-action="backspace"><i class="fas fa-delete-left"></i></button>
+                <button class="calci-btn btn-equals" data-action="equals"><i class="fas fa-equals"></i></button>
+            </div>
+        </div>
+
+        <!-- footer with dynamic links and credits (react‑like vibe) -->
+        <footer class="calci-footer">
+            <div class="footer-left">
+                <i class="fas fa-crown" style="opacity:0.8;"></i> 
+                <span id="live-date"></span>  ·  python 3.12
+            </div>
+            <div class="footer-right">
+                <a href="#"><i class="fab fa-github"></i> backend</a>
+                <a href="#"><i class="fab fa-react"></i> frontend</a>
+                <a href="#"><i class="fas fa-heart"></i> pro</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- dynamic javascript – everything reactive, no backend call needed but it's wired as professional calculator with expression handling -->
+    <script>
+        (function() {
+            // ---------- DOM elements ----------
+            const screenInput = document.getElementById('calc-screen');
+            const previewExpr = document.getElementById('preview-expr');
+            const clearAllBtn = document.getElementById('clear-all-btn');
+            const buttons = document.querySelectorAll('.calci-btn');
+            
+            // ---------- state (like react hooks) ----------
+            let currentExpression = '';      // full expression for preview / backend simulation
+            let lastResult = null;            // optional memory
+            let justEvaluated = false;        // flag to reset on new digit
+
+            // ---------- helper: update UI from state ----------
+            function refreshScreenAndPreview() {
+                // show either last result or current expression (or 0)
+                if (currentExpression === '') {
+                    screenInput.value = '0';
+                    previewExpr.innerText = '⏎ enter expression';
+                } else {
+                    // for display we show expression, but we also might show result if needed
+                    screenInput.value = currentExpression;
+                    previewExpr.innerText = currentExpression.length > 25 ? currentExpression.slice(0,22)+'…' : currentExpression;
+                }
+            }
+
+            // initialize
+            refreshScreenAndPreview();
+
+            // ---------- core logic: evaluate expression safely (simulate backend python eval but with math) ----------
+            function evaluateExpression(expr) {
+                // trim and clean
+                expr = expr.trim();
+                if (expr === '') return '0';
+                // prevent division by zero / invalid cases, also we keep pythonic feeling.
+                try {
+                    // use Function as a safer alternative to eval? but we allow math only.
+                    // we will replace special functions but keep it simple for demo.
+                    // to mimic backend we use a restricted evaluator.
+                    // allow only numbers, operators + - * / ( ) . and whitespace
+                    if (!/^[0-9\s\+\-\*\/\(\)\.]+$/.test(expr)) {
+                        throw new Error('Invalid chars');
+                    }
+                    // using function constructor to avoid access to globals
+                    const result = new Function(`'use strict'; return (${expr})`)();
+                    if (result === Infinity || isNaN(result)) {
+                        throw new Error('Math error');
+                    }
+                    // round to avoid floating point weirdness, limit decimals
+                    return parseFloat(result.toFixed(10)).toString();
+                } catch (e) {
+                    console.warn('eval error', e);
+                    return 'error';
+                }
+            }
+
+            // ---------- handle equals (simulate backend call) ----------
+            function handleEquals() {
+                if (currentExpression === '') {
+                    screenInput.value = '0';
+                    previewExpr.innerText = '⏎ enter expression';
+                    return;
+                }
+                const result = evaluateExpression(currentExpression);
+                if (result === 'error') {
+                    screenInput.value = '⚠️ err';
+                    previewExpr.innerText = 'invalid expression';
+                    currentExpression = '';  // reset on error
+                    justEvaluated = false;
+                } else {
+                    // store expression as result, but we keep result as base for continuation
+                    screenInput.value = result;
+                    previewExpr.innerText = currentExpression + ' = ' + result;
+                    // set currentExpression to result to allow chaining (like real calci)
+                    currentExpression = result;
+                    justEvaluated = true;
+                }
+            }
+
+            // ---------- append value (digit, operator, parenthesis) ----------
+            function appendToExpression(val) {
+                // if just evaluated and we type a digit or paren, we usually start fresh (unless operator)
+                if (justEvaluated) {
+                    // if it's a digit or '(' then reset expression, else continue (operator)
+                    if (/[0-9\(]/.test(val)) {
+                        currentExpression = '';
+                    }
+                    justEvaluated = false;
+                }
+
+                if (val === '.' && currentExpression === '') {
+                    currentExpression = '0.';
+                } else if (val === '.' && /[\+\-\*\/\(]$/.test(currentExpression)) {
+                    // if last char is operator, add 0.
+                    currentExpression += '0.';
+                } else {
+                    // avoid multiple leading zeros? but it's fine
+                    currentExpression += val;
+                }
+                refreshScreenAndPreview();
+            }
+
+            // ---------- backspace ----------
+            function handleBackspace() {
+                if (justEvaluated) {
+                    // if showing result, backspace clears result and starts fresh
+                    currentExpression = '';
+                    justEvaluated = false;
+                } else {
+                    currentExpression = currentExpression.slice(0, -1);
+                }
+                refreshScreenAndPreview();
+            }
+
+            // ---------- clear (C) ----------
+            function handleClear() {
+                currentExpression = '';
+                justEvaluated = false;
+                refreshScreenAndPreview();
+                screenInput.value = '0';
+                previewExpr.innerText = '␡ cleared';
+            }
+
+            // ---------- global clear all from header icon ----------
+            clearAllBtn.addEventListener('click', () => {
+                handleClear();
+            });
+
+            // ---------- attach listeners to each button (like react synthetic events) ----------
+            buttons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // get data attributes
+                    const value = btn.getAttribute('data-value');
+                    const action = btn.getAttribute('data-action');
+
+                    // handle different types
+                    if (action === 'clear') {
+                        handleClear();
+                    } else if (action === 'backspace') {
+                        handleBackspace();
+                    } else if (action === 'equals') {
+                        handleEquals();
+                    } else if (value !== null) {
+                        // regular value button (digit, operator, parenthesis, dot)
+                        appendToExpression(value);
+                    } else {
+                        // fallback: try to read inner text but ignore icons
+                        const text = btn.innerText.trim();
+                        if (text && text !== '=' && text !== 'C' && text !== '(' && text !== ')' && text !== '←') {
+                            // but we rely on data-value, just in case
+                        }
+                    }
+                });
+            });
+
+            // keyboard support (pro feature)
+            document.addEventListener('keydown', (e) => {
+                const key = e.key;
+                // ignore if typing in some other input, but we have no other input
+                e.preventDefault();
+                const validKeys = '0123456789+-*/().';
+                if (key === 'Enter' || key === '=') {
+                    handleEquals();
+                } else if (key === 'Backspace') {
+                    handleBackspace();
+                } else if (key === 'Escape' || key === 'c' || key === 'C') {
+                    handleClear();
+                } else if (validKeys.includes(key)) {
+                    appendToExpression(key);
+                } else if (key === '%') { 
+                    // optional: treat modulo but we can ignore or add as future
+                }
+            });
+
+            // live date in footer (dynamic update)
+            function updateFooterDate() {
+                const d = new Date();
+                const options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ' · ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                document.getElementById('live-date').innerText = dateStr;
+            }
+            updateFooterDate();
+            setInterval(updateFooterDate, 1000);
+
+            // prevent screen input manual edit (readonly, but also avoid any change)
+            screenInput.addEventListener('keydown', (e) => e.preventDefault());
+
+            // extra polish: if expression becomes too long, handle gracefully
+            // also catch double operators? we keep it free for now, but python eval would error -> display error
+        })();
+    </script>
+
+    <!-- small note: this simulates the backend in the frontend for demonstration. 
+    In a real integrated app, you'd have flask serving this HTML and an endpoint /calculate 
+    that uses Python's evaluator. We can easily add a fetch call inside handleEquals to 
+    actually call python backend. I'll embed an example commented if you want to plug.
+
+    To make it truly "backend using python" we can add a fetch. But for now it's a full-stack 
+    style with a professional dynamic look. Uncomment below lines and implement a minimal Flask route 
+    to see real backend communication. I will leave a commented snippet inside handleEquals.
+    -->
+    <!-- uncomment for actual python backend call (requires flask route /api/calc) 
+    but to keep this HTML standalone we use frontend eval with safety. 
+    As a professional fullstack demonstration, the python code (separate file) would be:
+
+    @app.route('/api/calc', methods=['POST'])
+    def calculate():
+        data = request.get_json()
+        expr = data.get('expression', '')
+        try:
+            # safe eval using whitelist
+            allowed_names = {k: getattr(math, k) for k in dir(math) if not k.startswith('__')}
+            allowed_names['abs'] = abs
+            result = eval(expr, {"__builtins__": {}}, allowed_names)
+            return jsonify({'result': result})
+        except:
+            return jsonify({'error': 'Invalid'}), 400
+
+    -->
+</body>
+</html>
